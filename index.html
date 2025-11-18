@@ -4,41 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#6366f1">
-    <title>AlphaBeat - Gamified Task Manager</title>
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
-    
+    <title>AlphaBeat - Task & Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="#" id="manifest-placeholder">
     <style>
         :root {
             --primary: #6366f1;
             --secondary: #8b5cf6;
             --success: #10b981;
-            --warning: #f59e0b;
             --danger: #ef4444;
-            --dark: #1e293b;
+            --dark: #1e1b4b;
+            --darker: #0f172a;
             --light: #f8fafc;
+            --border: #e2e8f0;
         }
 
         * {
-            transition: background-color 0.3s ease, color 0.3s ease;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px 0;
+            transition: all 0.3s ease;
         }
 
         body.dark-mode {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
         }
 
-        .app-container {
+        .main-container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         .glass-card {
@@ -49,10 +50,12 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
 
-        .dark-mode .glass-card {
-            background: rgba(30, 41, 59, 0.95);
+        body.dark-mode .glass-card {
+            background: rgba(30, 27, 75, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.2);
             color: #f8fafc;
         }
 
@@ -65,65 +68,117 @@
 
         .logo {
             font-size: 2rem;
-            font-weight: bold;
+            font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .level-badge {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        .user-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .xp-bar {
-            height: 20px;
-            background: rgba(0, 0, 0, 0.1);
+        .level-progress {
+            width: 200px;
+        }
+
+        .progress {
+            height: 8px;
             border-radius: 10px;
-            overflow: hidden;
-            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.1);
         }
 
-        .dark-mode .xp-bar {
+        body.dark-mode .progress {
             background: rgba(255, 255, 255, 0.1);
         }
 
-        .xp-progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--success), #34d399);
+        .progress-bar {
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 10px;
             transition: width 0.5s ease;
+        }
+
+        .task-input {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .task-input input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .task-input input {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(139, 92, 246, 0.3);
             color: white;
-            font-size: 0.75rem;
-            font-weight: bold;
+        }
+
+        .task-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .task-list {
+            list-style: none;
         }
 
         .task-item {
             background: white;
-            border-radius: 12px;
-            padding: 15px;
+            padding: 15px 20px;
+            border-radius: 15px;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            gap: 15px;
             transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
-        .dark-mode .task-item {
-            background: rgba(51, 65, 85, 0.8);
+        body.dark-mode .task-item {
+            background: rgba(15, 23, 42, 0.8);
         }
 
         .task-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+            border-color: var(--primary);
         }
 
         .task-item.completed {
@@ -131,123 +186,183 @@
             text-decoration: line-through;
         }
 
-        .btn-futuristic {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 10px;
-            padding: 10px 25px;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-futuristic:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
-            color: white;
-        }
-
-        .game-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 15px;
-            padding: 25px;
-            color: white;
-            text-align: center;
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
             cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 1rem;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
         }
 
-        .game-card:hover {
+        .btn-delete:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
         }
 
-        .mission-card {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border-radius: 15px;
-            padding: 20px;
-            color: white;
-            margin-bottom: 15px;
-        }
-
-        .mission-card.completed {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        .game-container {
+            text-align: center;
         }
 
         .game-board {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 20px 0;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            margin: 20px auto;
         }
 
-        .game-tile {
+        .game-card {
             aspect-ratio: 1;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '?';
+            position: absolute;
             color: white;
+            font-weight: 800;
+        }
+
+        .game-card.flipped::before {
+            content: attr(data-emoji);
+        }
+
+        .game-card.matched {
+            background: linear-gradient(135deg, var(--success), #059669);
+            transform: scale(0.95);
+        }
+
+        .game-card:hover:not(.matched) {
+            transform: scale(1.05);
+        }
+
+        .mission-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 2px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .mission-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+        }
+
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .mission-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .mission-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .btn-claim {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .game-tile:hover {
-            transform: scale(1.1);
+        .btn-claim:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
         }
 
-        .game-tile.flipped {
-            background: white;
-            color: var(--primary);
+        .btn-claim:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .game-tile.matched {
-            background: var(--success);
-            pointer-events: none;
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .stats-box {
-            text-align: center;
-            padding: 15px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-            border-radius: 12px;
-            margin-bottom: 15px;
+        .theme-toggle:hover {
+            transform: rotate(180deg);
         }
 
-        .dark-mode .stats-box {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            max-width: 300px;
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .dark-mode .notification {
-            background: var(--dark);
+        body.dark-mode .tab-btn {
+            background: rgba(255, 255, 255, 0.1);
             color: white;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: var(--primary);
         }
 
         .tab-content {
@@ -256,7 +371,7 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
@@ -264,524 +379,487 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .nav-pills .nav-link {
-            border-radius: 10px;
-            font-weight: 600;
-            color: #64748b;
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideIn 0.5s ease;
         }
 
-        .nav-pills .nav-link.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         @media (max-width: 768px) {
-            .logo {
-                font-size: 1.5rem;
+            .header {
+                flex-direction: column;
+                gap: 15px;
             }
-            
+
+            .user-stats {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .level-progress {
+                width: 100%;
+            }
+
+            .task-input {
+                flex-direction: column;
+            }
+
             .game-board {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
+        }
+
+        .install-prompt {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .install-prompt.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .btn-install {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
+    <div class="install-prompt" id="installPrompt">
+        <h5>📱 Install AlphaBeat</h5>
+        <p>Tambahkan ke home screen untuk pengalaman lebih baik!</p>
+        <button class="btn-install" onclick="installApp()">Install Sekarang</button>
+        <button class="btn-install" onclick="dismissInstall()">Nanti Saja</button>
+    </div>
+
+    <div class="main-container">
         <div class="glass-card">
             <div class="header">
-                <div>
-                    <div class="logo"><i class="bi bi-lightning-charge-fill"></i> AlphaBeat</div>
-                    <small class="text-muted" id="dateDisplay"></small>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="level-badge">
-                        <i class="bi bi-trophy-fill"></i> Level <span id="userLevel">1</span>
+                <div class="logo">⚡ AlphaBeat</div>
+                <div class="user-stats">
+                    <div class="stat-badge">
+                        🏆 Level <span id="userLevel">1</span>
                     </div>
-                    <button class="btn btn-outline-secondary rounded-circle" id="darkModeToggle">
-                        <i class="bi bi-moon-fill"></i>
-                    </button>
+                    <div class="stat-badge">
+                        ⭐ <span id="userXP">0</span> XP
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
                 </div>
             </div>
             
-            <div class="stats-box">
-                <div class="row text-center">
-                    <div class="col-4">
-                        <h4 id="totalTasks">0</h4>
-                        <small>Total Tasks</small>
-                    </div>
-                    <div class="col-4">
-                        <h4 id="completedTasks">0</h4>
-                        <small>Completed</small>
-                    </div>
-                    <div class="col-4">
-                        <h4 id="userXP">0</h4>
-                        <small>XP</small>
-                    </div>
+            <div class="level-progress">
+                <small>Progress ke Level Berikutnya</small>
+                <div class="progress">
+                    <div class="progress-bar" id="xpProgress" style="width: 0%"></div>
                 </div>
-            </div>
-            
-            <div class="xp-bar">
-                <div class="xp-progress" id="xpProgress" style="width: 0%;">0%</div>
+                <small><span id="currentXP">0</span> / <span id="maxXP">100</span> XP</small>
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
         <div class="glass-card">
-            <ul class="nav nav-pills mb-3 justify-content-center" role="tablist">
-                <li class="nav-item">
-                    <button class="nav-link active" onclick="switchTab('tasks')">
-                        <i class="bi bi-check-circle"></i> Tasks
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" onclick="switchTab('missions')">
-                        <i class="bi bi-flag-fill"></i> Missions
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" onclick="switchTab('game')">
-                        <i class="bi bi-controller"></i> Daily Game
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Tasks Tab -->
-        <div id="tasksTab" class="tab-content active">
-            <div class="glass-card">
-                <h4 class="mb-3"><i class="bi bi-list-check"></i> Daily Tasks</h4>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="taskInput" placeholder="Add a new task...">
-                    <button class="btn btn-futuristic" onclick="addTask()">
-                        <i class="bi bi-plus-lg"></i> Add
-                    </button>
-                </div>
-                <div id="taskList"></div>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('tasks')">📋 Tasks</button>
+                <button class="tab-btn" onclick="switchTab('missions')">🎯 Missions</button>
+                <button class="tab-btn" onclick="switchTab('game')">🎮 Daily Game</button>
             </div>
-        </div>
 
-        <!-- Missions Tab -->
-        <div id="missionsTab" class="tab-content">
-            <div class="glass-card">
-                <h4 class="mb-3"><i class="bi bi-flag-fill"></i> Daily Missions</h4>
+            <div id="tasksTab" class="tab-content active">
+                <h4 class="mb-3">📝 Daily Tasks</h4>
+                <div class="task-input">
+                    <input type="text" id="taskInput" placeholder="Tambahkan task baru..." />
+                    <button class="btn-add" onclick="addTask()">+ Tambah</button>
+                </div>
+                <ul class="task-list" id="taskList"></ul>
+            </div>
+
+            <div id="missionsTab" class="tab-content">
+                <h4 class="mb-3">🎯 Missions</h4>
                 <div id="missionList"></div>
             </div>
-        </div>
 
-        <!-- Game Tab -->
-        <div id="gameTab" class="tab-content">
-            <div class="glass-card">
-                <h4 class="mb-3 text-center"><i class="bi bi-controller"></i> Memory Match Game</h4>
-                <p class="text-center">Match all pairs to earn bonus XP!</p>
+            <div id="gameTab" class="tab-content">
+                <h4 class="mb-3">🎮 Memory Match Game</h4>
+                <p>Temukan semua pasangan kartu untuk mendapatkan bonus XP!</p>
                 <div class="text-center mb-3">
-                    <h5>Moves: <span id="moveCount">0</span> | Time: <span id="timeCount">0</span>s</h5>
+                    <strong>Skor: <span id="gameScore">0</span></strong> | 
+                    <strong>Percobaan: <span id="gameAttempts">0</span></strong>
                 </div>
                 <div class="game-board" id="gameBoard"></div>
-                <div class="text-center mt-3">
-                    <button class="btn btn-futuristic" onclick="startGame()">
-                        <i class="bi bi-arrow-clockwise"></i> New Game
-                    </button>
-                </div>
+                <button class="btn-add mt-3" onclick="resetGame()">🔄 Main Lagi</button>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Application State
-        let appState = {
-            tasks: [],
-            missions: [],
+        // PWA Setup
+        const manifestData = {
+            name: "AlphaBeat - Task & Game App",
+            short_name: "AlphaBeat",
+            description: "Aplikasi produktivitas dengan game interaktif",
+            start_url: "/",
+            display: "standalone",
+            background_color: "#667eea",
+            theme_color: "#6366f1",
+            icons: [
+                {
+                    src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' width='100' height='100' rx='20'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>⚡</text></svg>",
+                    sizes: "192x192",
+                    type: "image/svg+xml"
+                }
+            ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'alphabeat-v1';
+                self.addEventListener('install', (e) => {
+                    self.skipWaiting();
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(
+                        fetch(e.request).catch(() => caches.match(e.request))
+                    );
+                });
+            `;
+            const swBlob = new Blob([swCode], {type: 'application/javascript'});
+            const swURL = URL.createObjectURL(swBlob);
+            navigator.serviceWorker.register(swURL);
+        }
+
+        // Data Management
+        let userData = {
             level: 1,
             xp: 0,
-            xpToNextLevel: 100,
-            darkMode: false,
-            dailyGameCompleted: false,
-            lastGameDate: null
+            tasks: [],
+            missions: [
+                { id: 1, title: "Selesaikan 5 Tasks", target: 5, current: 0, reward: 50, claimed: false },
+                { id: 2, title: "Main Game 3 Kali", target: 3, current: 0, reward: 30, claimed: false },
+                { id: 3, title: "Login 7 Hari Berturut-turut", target: 7, current: 1, reward: 100, claimed: false }
+            ],
+            theme: 'light',
+            lastLogin: new Date().toDateString(),
+            loginStreak: 1,
+            gamesPlayed: 0
         };
 
-        // Game State
-        let gameState = {
-            cards: [],
-            flippedCards: [],
-            matchedPairs: 0,
-            moves: 0,
-            timer: 0,
-            timerInterval: null
-        };
-
-        // Initialize App
-        function initApp() {
-            loadData();
-            updateUI();
-            displayDate();
-            generateMissions();
-            checkDailyReset();
-            
-            // Event Listeners
-            document.getElementById('taskInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') addTask();
-            });
-        }
-
-        // Display Current Date
-        function displayDate() {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('id-ID', options);
-        }
-
-        // Check Daily Reset
-        function checkDailyReset() {
-            const today = new Date().toDateString();
-            if (appState.lastGameDate !== today) {
-                appState.dailyGameCompleted = false;
-                appState.lastGameDate = today;
-                generateMissions();
-                saveData();
-            }
-        }
-
-        // Add Task
-        function addTask() {
-            const input = document.getElementById('taskInput');
-            const taskText = input.value.trim();
-            
-            if (taskText === '') return;
-            
-            const task = {
-                id: Date.now(),
-                text: taskText,
-                completed: false,
-                createdAt: new Date().toISOString()
-            };
-            
-            appState.tasks.push(task);
-            input.value = '';
-            saveData();
-            updateUI();
-            showNotification('Task added! +10 XP', 'success');
-            addXP(10);
-        }
-
-        // Toggle Task
-        function toggleTask(id) {
-            const task = appState.tasks.find(t => t.id === id);
-            if (task) {
-                task.completed = !task.completed;
-                if (task.completed) {
-                    addXP(20);
-                    showNotification('Task completed! +20 XP', 'success');
-                    checkMissionProgress();
-                }
-                saveData();
-                updateUI();
-            }
-        }
-
-        // Delete Task
-        function deleteTask(id) {
-            appState.tasks = appState.tasks.filter(t => t.id !== id);
-            saveData();
-            updateUI();
-        }
-
-        // Render Tasks
-        function renderTasks() {
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = '';
-            
-            appState.tasks.forEach(task => {
-                const taskDiv = document.createElement('div');
-                taskDiv.className = `task-item ${task.completed ? 'completed' : ''}`;
-                taskDiv.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <input type="checkbox" class="form-check-input me-3" 
-                               ${task.completed ? 'checked' : ''} 
-                               onchange="toggleTask(${task.id})">
-                        <span>${task.text}</span>
-                    </div>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(${task.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                `;
-                taskList.appendChild(taskDiv);
-            });
-        }
-
-        // Generate Missions
-        function generateMissions() {
-            appState.missions = [
-                { id: 1, text: 'Complete 3 tasks today', target: 3, progress: 0, xpReward: 50, claimed: false },
-                { id: 2, text: 'Complete 5 tasks today', target: 5, progress: 0, xpReward: 100, claimed: false },
-                { id: 3, text: 'Play the daily game', target: 1, progress: 0, xpReward: 75, claimed: false },
-                { id: 4, text: 'Complete all daily tasks', target: 1, progress: 0, xpReward: 150, claimed: false }
-            ];
-            saveData();
-        }
-
-        // Check Mission Progress
-        function checkMissionProgress() {
-            const completedCount = appState.tasks.filter(t => t.completed).length;
-            const totalTasks = appState.tasks.length;
-            
-            appState.missions.forEach(mission => {
-                if (mission.id === 1) mission.progress = Math.min(completedCount, 3);
-                if (mission.id === 2) mission.progress = Math.min(completedCount, 5);
-                if (mission.id === 3 && appState.dailyGameCompleted) mission.progress = 1;
-                if (mission.id === 4 && totalTasks > 0 && completedCount === totalTasks) mission.progress = 1;
-            });
-            
-            saveData();
-            updateUI();
-        }
-
-        // Claim Mission
-        function claimMission(id) {
-            const mission = appState.missions.find(m => m.id === id);
-            if (mission && mission.progress >= mission.target && !mission.claimed) {
-                mission.claimed = true;
-                addXP(mission.xpReward);
-                showNotification(`Mission completed! +${mission.xpReward} XP`, 'success');
-                saveData();
-                updateUI();
-            }
-        }
-
-        // Render Missions
-        function renderMissions() {
-            const missionList = document.getElementById('missionList');
-            missionList.innerHTML = '';
-            
-            appState.missions.forEach(mission => {
-                const progress = (mission.progress / mission.target) * 100;
-                const canClaim = mission.progress >= mission.target && !mission.claimed;
-                const missionDiv = document.createElement('div');
-                missionDiv.className = `mission-card ${mission.claimed ? 'completed' : ''}`;
-                missionDiv.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0">${mission.text}</h6>
-                        <span class="badge bg-light text-dark">+${mission.xpReward} XP</span>
-                    </div>
-                    <div class="progress mb-2" style="height: 10px;">
-                        <div class="progress-bar bg-success" style="width: ${progress}%"></div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small>${mission.progress}/${mission.target}</small>
-                        ${canClaim ? 
-                            `<button class="btn btn-sm btn-light" onclick="claimMission(${mission.id})">
-                                <i class="bi bi-gift-fill"></i> Claim
-                            </button>` : 
-                            mission.claimed ? '<small><i class="bi bi-check-circle-fill"></i> Claimed</small>' : ''
-                        }
-                    </div>
-                `;
-                missionList.appendChild(missionDiv);
-            });
-        }
-
-        // Memory Match Game
-        function startGame() {
-            const symbols = ['🎮', '🎯', '🎨', '🎭', '🎪', '🎸', '🎲', '🎰'];
-            gameState.cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
-            gameState.flippedCards = [];
-            gameState.matchedPairs = 0;
-            gameState.moves = 0;
-            gameState.timer = 0;
-            
-            clearInterval(gameState.timerInterval);
-            gameState.timerInterval = setInterval(() => {
-                gameState.timer++;
-                document.getElementById('timeCount').textContent = gameState.timer;
-            }, 1000);
-            
-            renderGame();
-            document.getElementById('moveCount').textContent = '0';
-            document.getElementById('timeCount').textContent = '0';
-        }
-
-        function renderGame() {
-            const board = document.getElementById('gameBoard');
-            board.innerHTML = '';
-            
-            gameState.cards.forEach((symbol, index) => {
-                const tile = document.createElement('div');
-                tile.className = 'game-tile';
-                tile.dataset.index = index;
-                tile.innerHTML = '?';
-                tile.onclick = () => flipCard(index);
-                board.appendChild(tile);
-            });
-        }
-
-        function flipCard(index) {
-            if (gameState.flippedCards.length >= 2) return;
-            if (gameState.flippedCards.includes(index)) return;
-            
-            const tiles = document.querySelectorAll('.game-tile');
-            const tile = tiles[index];
-            
-            if (tile.classList.contains('matched')) return;
-            
-            tile.classList.add('flipped');
-            tile.innerHTML = gameState.cards[index];
-            gameState.flippedCards.push(index);
-            
-            if (gameState.flippedCards.length === 2) {
-                gameState.moves++;
-                document.getElementById('moveCount').textContent = gameState.moves;
-                checkMatch();
-            }
-        }
-
-        function checkMatch() {
-            const [index1, index2] = gameState.flippedCards;
-            const tiles = document.querySelectorAll('.game-tile');
-            
-            setTimeout(() => {
-                if (gameState.cards[index1] === gameState.cards[index2]) {
-                    tiles[index1].classList.add('matched');
-                    tiles[index2].classList.add('matched');
-                    gameState.matchedPairs++;
+        // Load saved data
+        function loadData() {
+            const saved = localStorage.getItem('alphabeat-data');
+            if (saved) {
+                userData = {...userData, ...JSON.parse(saved)};
+                
+                // Check login streak
+                const today = new Date().toDateString();
+                if (userData.lastLogin !== today) {
+                    const lastDate = new Date(userData.lastLogin);
+                    const todayDate = new Date(today);
+                    const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
                     
-                    if (gameState.matchedPairs === 8) {
-                        clearInterval(gameState.timerInterval);
-                        const bonus = Math.max(200 - gameState.moves * 5, 50);
-                        addXP(bonus);
-                        appState.dailyGameCompleted = true;
-                        checkMissionProgress();
-                        showNotification(`Game completed! +${bonus} XP`, 'success');
+                    if (diffDays === 1) {
+                        userData.loginStreak++;
+                        userData.missions[2].current = userData.loginStreak;
+                    } else if (diffDays > 1) {
+                        userData.loginStreak = 1;
+                        userData.missions[2].current = 1;
                     }
-                } else {
-                    tiles[index1].classList.remove('flipped');
-                    tiles[index2].classList.remove('flipped');
-                    tiles[index1].innerHTML = '?';
-                    tiles[index2].innerHTML = '?';
+                    userData.lastLogin = today;
                 }
-                gameState.flippedCards = [];
-            }, 500);
+            }
+            updateUI();
+        }
+
+        function saveData() {
+            localStorage.setItem('alphabeat-data', JSON.stringify(userData));
         }
 
         // XP and Level System
         function addXP(amount) {
-            appState.xp += amount;
+            userData.xp += amount;
+            const xpNeeded = userData.level * 100;
             
-            while (appState.xp >= appState.xpToNextLevel) {
-                appState.xp -= appState.xpToNextLevel;
-                appState.level++;
-                appState.xpToNextLevel = Math.floor(appState.xpToNextLevel * 1.5);
-                showNotification(`Level Up! You are now level ${appState.level}!`, 'success');
+            if (userData.xp >= xpNeeded) {
+                userData.level++;
+                userData.xp = userData.xp - xpNeeded;
+                showNotification(`🎉 Level Up! Sekarang Level ${userData.level}!`);
             }
             
-            saveData();
             updateUI();
-        }
-
-        // Dark Mode Toggle
-        document.getElementById('darkModeToggle').addEventListener('click', () => {
-            appState.darkMode = !appState.darkMode;
-            document.body.classList.toggle('dark-mode', appState.darkMode);
-            const icon = document.querySelector('#darkModeToggle i');
-            icon.className = appState.darkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
             saveData();
-        });
-
-        // Tab Switching
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            
-            if (tab === 'tasks') {
-                document.getElementById('tasksTab').classList.add('active');
-                document.querySelectorAll('.nav-link')[0].classList.add('active');
-            } else if (tab === 'missions') {
-                document.getElementById('missionsTab').classList.add('active');
-                document.querySelectorAll('.nav-link')[1].classList.add('active');
-            } else if (tab === 'game') {
-                document.getElementById('gameTab').classList.add('active');
-                document.querySelectorAll('.nav-link')[2].classList.add('active');
-            }
         }
 
-        // Update UI
         function updateUI() {
-            document.getElementById('userLevel').textContent = appState.level;
-            document.getElementById('userXP').textContent = appState.xp;
-            document.getElementById('totalTasks').textContent = appState.tasks.length;
-            document.getElementById('completedTasks').textContent = appState.tasks.filter(t => t.completed).length;
+            document.getElementById('userLevel').textContent = userData.level;
+            document.getElementById('userXP').textContent = userData.xp;
+            document.getElementById('currentXP').textContent = userData.xp;
             
-            const xpPercent = (appState.xp / appState.xpToNextLevel) * 100;
-            const xpBar = document.getElementById('xpProgress');
-            xpBar.style.width = xpPercent + '%';
-            xpBar.textContent = Math.round(xpPercent) + '%';
+            const xpNeeded = userData.level * 100;
+            document.getElementById('maxXP').textContent = xpNeeded;
+            document.getElementById('xpProgress').style.width = (userData.xp / xpNeeded * 100) + '%';
+            
+            if (userData.theme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
             
             renderTasks();
             renderMissions();
+        }
+
+        // Task Management
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
             
-            if (appState.darkMode) {
-                document.body.classList.add('dark-mode');
-                document.querySelector('#darkModeToggle i').className = 'bi bi-sun-fill';
+            if (text) {
+                userData.tasks.push({
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                });
+                input.value = '';
+                saveData();
+                renderTasks();
+                showNotification('✅ Task ditambahkan!');
             }
         }
 
-        // Notification System
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-check-circle-fill text-success me-2"></i>
-                    <span>${message}</span>
+        function toggleTask(id) {
+            const task = userData.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    addXP(10);
+                    userData.missions[0].current++;
+                    showNotification('🎉 +10 XP!');
+                }
+                saveData();
+                renderTasks();
+                renderMissions();
+            }
+        }
+
+        function deleteTask(id) {
+            userData.tasks = userData.tasks.filter(t => t.id !== id);
+            saveData();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = userData.tasks.map(task => `
+                <li class="task-item ${task.completed ? 'completed' : ''}">
+                    <input type="checkbox" class="task-checkbox" 
+                           ${task.completed ? 'checked' : ''} 
+                           onchange="toggleTask(${task.id})">
+                    <span class="task-text">${task.text}</span>
+                    <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️</button>
+                </li>
+            `).join('');
+        }
+
+        // Mission System
+        function claimMission(id) {
+            const mission = userData.missions.find(m => m.id === id);
+            if (mission && mission.current >= mission.target && !mission.claimed) {
+                mission.claimed = true;
+                addXP(mission.reward);
+                showNotification(`🎁 Misi selesai! +${mission.reward} XP!`);
+                renderMissions();
+            }
+        }
+
+        function renderMissions() {
+            const list = document.getElementById('missionList');
+            list.innerHTML = userData.missions.map(mission => {
+                const progress = Math.min((mission.current / mission.target) * 100, 100);
+                const canClaim = mission.current >= mission.target && !mission.claimed;
+                
+                return `
+                    <div class="mission-card">
+                        <div class="mission-title">${mission.title}</div>
+                        <div class="mission-progress">
+                            <div style="flex: 1;">
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: ${progress}%"></div>
+                                </div>
+                                <small>${mission.current} / ${mission.target}</small>
+                            </div>
+                            <button class="btn-claim" 
+                                    onclick="claimMission(${mission.id})"
+                                    ${!canClaim || mission.claimed ? 'disabled' : ''}>
+                                ${mission.claimed ? '✓ Claimed' : `Claim ${mission.reward} XP`}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Memory Game
+        let gameState = {
+            cards: [],
+            flipped: [],
+            matched: [],
+            attempts: 0,
+            score: 0
+        };
+
+        const emojis = ['🎮', '⚡', '🎯', '🏆', '⭐', '🎨', '🚀', '💎'];
+
+        function initGame() {
+            const gameEmojis = [...emojis.slice(0, 8), ...emojis.slice(0, 8)];
+            gameState.cards = gameEmojis.sort(() => Math.random() - 0.5);
+            gameState.flipped = [];
+            gameState.matched = [];
+            gameState.attempts = 0;
+            gameState.score = 0;
+            renderGame();
+        }
+
+        function renderGame() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = gameState.cards.map((emoji, index) => `
+                <div class="game-card ${gameState.matched.includes(index) ? 'matched' : ''} 
+                     ${gameState.flipped.includes(index) ? 'flipped' : ''}"
+                     data-emoji="${emoji}"
+                     onclick="flipCard(${index})">
                 </div>
-            `;
-            document.body.appendChild(notification);
+            `).join('');
+            
+            document.getElementById('gameScore').textContent = gameState.score;
+            document.getElementById('gameAttempts').textContent = gameState.attempts;
+        }
+
+        function flipCard(index) {
+            if (gameState.flipped.length >= 2 || 
+                gameState.flipped.includes(index) || 
+                gameState.matched.includes(index)) return;
+            
+            gameState.flipped.push(index);
+            renderGame();
+            
+            if (gameState.flipped.length === 2) {
+                gameState.attempts++;
+                setTimeout(checkMatch, 800);
+            }
+        }
+
+        function checkMatch() {
+            const [first, second] = gameState.flipped;
+            
+            if (gameState.cards[first] === gameState.cards[second]) {
+                gameState.matched.push(first, second);
+                gameState.score += 10;
+                
+                if (gameState.matched.length === gameState.cards.length) {
+                    const bonus = Math.max(50 - gameState.attempts * 2, 20);
+                    addXP(bonus);
+                    userData.gamesPlayed++;
+                    userData.missions[1].current = userData.gamesPlayed;
+                    showNotification(`🎉 Game Selesai! +${bonus} XP!`);
+                    saveData();
+                    renderMissions();
+                }
+            }
+            
+            gameState.flipped = [];
+            renderGame();
+        }
+
+        function resetGame() {
+            initGame();
+        }
+
+        // UI Functions
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        function toggleTheme() {
+            userData.theme = userData.theme === 'light' ? 'dark' : 'light';
+            document.body.classList.toggle('dark-mode');
+            event.target.textContent = userData.theme === 'dark' ? '☀️' : '🌙';
+            saveData();
+        }
+
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+            document.body.appendChild(notif);
             
             setTimeout(() => {
-                notification.remove();
+                notif.remove();
             }, 3000);
         }
 
-        // Data Persistence
-        function saveData() {
-            localStorage.setItem('alphabeat_data', JSON.stringify(appState));
-        }
+        // PWA Install
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').classList.add('show');
+        });
 
-        function loadData() {
-            const saved = localStorage.getItem('alphabeat_data');
-            if (saved) {
-                appState = JSON.parse(saved);
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choice) => {
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').classList.remove('show');
+                });
             }
         }
 
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register(createServiceWorkerBlob())
-                .then(() => console.log('Service Worker registered'))
-                .catch(err => console.log('Service Worker registration failed:', err));
+        function dismissInstall() {
+            document.getElementById('installPrompt').classList.remove('show');
         }
 
-        function createServiceWorkerBlob() {
-            const swCode = `
-                const CACHE_NAME = 'alphabeat-v1';
-                self.addEventListener('install', (e) => {
-                    e.waitUntil(
-                        caches.open(CACHE_NAME).then(cache => cache.addAll(['/']))
-                    );
-                });
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(
-                        caches.match(e.request).then(response => response || fetch(e.request))
-                    );
-                });
-            `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            return URL.createObjectURL(blob);
-        }
+        // Enter key support
+        document.getElementById('taskInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
 
-        // Initialize on load
-        window.onload = initApp;
+        // Initialize
+        loadData();
+        initGame();
     </script>
 </body>
 </html>
