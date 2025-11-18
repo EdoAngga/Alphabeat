@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <title>AlphaBeat - Gamified Task Manager</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .dark-mode .glass-card {
+            background: rgba(30, 41, 59, 0.95);
+            color: #f8fafc;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .level-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .xp-bar {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .dark-mode .xp-bar {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .xp-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #34d399);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .task-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .task-item {
+            background: rgba(51, 65, 85, 0.8);
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .btn-futuristic {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            padding: 10px 25px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-futuristic:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+            color: white;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
+        }
+
+        .mission-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .mission-card.completed {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .game-tile {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-tile:hover {
+            transform: scale(1.1);
+        }
+
+        .game-tile.flipped {
+            background: white;
+            color: var(--primary);
+        }
+
+        .game-tile.matched {
+            background: var(--success);
+            pointer-events: none;
+        }
+
+        .stats-box {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .dark-mode .stats-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+        }
+
+        .dark-mode .notification {
+            background: var(--dark);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 10px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="glass-card">
+            <div class="header">
+                <div>
+                    <div class="logo"><i class="bi bi-lightning-charge-fill"></i> AlphaBeat</div>
+                    <small class="text-muted" id="dateDisplay"></small>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="level-badge">
+                        <i class="bi bi-trophy-fill"></i> Level <span id="userLevel">1</span>
+                    </div>
+                    <button class="btn btn-outline-secondary rounded-circle" id="darkModeToggle">
+                        <i class="bi bi-moon-fill"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stats-box">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h4 id="totalTasks">0</h4>
+                        <small>Total Tasks</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 id="completedTasks">0</h4>
+                        <small>Completed</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 id="userXP">0</h4>
+                        <small>XP</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="xp-bar">
+                <div class="xp-progress" id="xpProgress" style="width: 0%;">0%</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="glass-card">
+            <ul class="nav nav-pills mb-3 justify-content-center" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" onclick="switchTab('tasks')">
+                        <i class="bi bi-check-circle"></i> Tasks
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" onclick="switchTab('missions')">
+                        <i class="bi bi-flag-fill"></i> Missions
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" onclick="switchTab('game')">
+                        <i class="bi bi-controller"></i> Daily Game
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tasks Tab -->
+        <div id="tasksTab" class="tab-content active">
+            <div class="glass-card">
+                <h4 class="mb-3"><i class="bi bi-list-check"></i> Daily Tasks</h4>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="taskInput" placeholder="Add a new task...">
+                    <button class="btn btn-futuristic" onclick="addTask()">
+                        <i class="bi bi-plus-lg"></i> Add
+                    </button>
+                </div>
+                <div id="taskList"></div>
+            </div>
+        </div>
+
+        <!-- Missions Tab -->
+        <div id="missionsTab" class="tab-content">
+            <div class="glass-card">
+                <h4 class="mb-3"><i class="bi bi-flag-fill"></i> Daily Missions</h4>
+                <div id="missionList"></div>
+            </div>
+        </div>
+
+        <!-- Game Tab -->
+        <div id="gameTab" class="tab-content">
+            <div class="glass-card">
+                <h4 class="mb-3 text-center"><i class="bi bi-controller"></i> Memory Match Game</h4>
+                <p class="text-center">Match all pairs to earn bonus XP!</p>
+                <div class="text-center mb-3">
+                    <h5>Moves: <span id="moveCount">0</span> | Time: <span id="timeCount">0</span>s</h5>
+                </div>
+                <div class="game-board" id="gameBoard"></div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-futuristic" onclick="startGame()">
+                        <i class="bi bi-arrow-clockwise"></i> New Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Application State
+        let appState = {
+            tasks: [],
+            missions: [],
+            level: 1,
+            xp: 0,
+            xpToNextLevel: 100,
+            darkMode: false,
+            dailyGameCompleted: false,
+            lastGameDate: null
+        };
+
+        // Game State
+        let gameState = {
+            cards: [],
+            flippedCards: [],
+            matchedPairs: 0,
+            moves: 0,
+            timer: 0,
+            timerInterval: null
+        };
+
+        // Initialize App
+        function initApp() {
+            loadData();
+            updateUI();
+            displayDate();
+            generateMissions();
+            checkDailyReset();
+            
+            // Event Listeners
+            document.getElementById('taskInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+        }
+
+        // Display Current Date
+        function displayDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('id-ID', options);
+        }
+
+        // Check Daily Reset
+        function checkDailyReset() {
+            const today = new Date().toDateString();
+            if (appState.lastGameDate !== today) {
+                appState.dailyGameCompleted = false;
+                appState.lastGameDate = today;
+                generateMissions();
+                saveData();
+            }
+        }
+
+        // Add Task
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const taskText = input.value.trim();
+            
+            if (taskText === '') return;
+            
+            const task = {
+                id: Date.now(),
+                text: taskText,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            appState.tasks.push(task);
+            input.value = '';
+            saveData();
+            updateUI();
+            showNotification('Task added! +10 XP', 'success');
+            addXP(10);
+        }
+
+        // Toggle Task
+        function toggleTask(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    addXP(20);
+                    showNotification('Task completed! +20 XP', 'success');
+                    checkMissionProgress();
+                }
+                saveData();
+                updateUI();
+            }
+        }
+
+        // Delete Task
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveData();
+            updateUI();
+        }
+
+        // Render Tasks
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            
+            appState.tasks.forEach(task => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = `task-item ${task.completed ? 'completed' : ''}`;
+                taskDiv.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <input type="checkbox" class="form-check-input me-3" 
+                               ${task.completed ? 'checked' : ''} 
+                               onchange="toggleTask(${task.id})">
+                        <span>${task.text}</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(${task.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                `;
+                taskList.appendChild(taskDiv);
+            });
+        }
+
+        // Generate Missions
+        function generateMissions() {
+            appState.missions = [
+                { id: 1, text: 'Complete 3 tasks today', target: 3, progress: 0, xpReward: 50, claimed: false },
+                { id: 2, text: 'Complete 5 tasks today', target: 5, progress: 0, xpReward: 100, claimed: false },
+                { id: 3, text: 'Play the daily game', target: 1, progress: 0, xpReward: 75, claimed: false },
+                { id: 4, text: 'Complete all daily tasks', target: 1, progress: 0, xpReward: 150, claimed: false }
+            ];
+            saveData();
+        }
+
+        // Check Mission Progress
+        function checkMissionProgress() {
+            const completedCount = appState.tasks.filter(t => t.completed).length;
+            const totalTasks = appState.tasks.length;
+            
+            appState.missions.forEach(mission => {
+                if (mission.id === 1) mission.progress = Math.min(completedCount, 3);
+                if (mission.id === 2) mission.progress = Math.min(completedCount, 5);
+                if (mission.id === 3 && appState.dailyGameCompleted) mission.progress = 1;
+                if (mission.id === 4 && totalTasks > 0 && completedCount === totalTasks) mission.progress = 1;
+            });
+            
+            saveData();
+            updateUI();
+        }
+
+        // Claim Mission
+        function claimMission(id) {
+            const mission = appState.missions.find(m => m.id === id);
+            if (mission && mission.progress >= mission.target && !mission.claimed) {
+                mission.claimed = true;
+                addXP(mission.xpReward);
+                showNotification(`Mission completed! +${mission.xpReward} XP`, 'success');
+                saveData();
+                updateUI();
+            }
+        }
+
+        // Render Missions
+        function renderMissions() {
+            const missionList = document.getElementById('missionList');
+            missionList.innerHTML = '';
+            
+            appState.missions.forEach(mission => {
+                const progress = (mission.progress / mission.target) * 100;
+                const canClaim = mission.progress >= mission.target && !mission.claimed;
+                const missionDiv = document.createElement('div');
+                missionDiv.className = `mission-card ${mission.claimed ? 'completed' : ''}`;
+                missionDiv.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">${mission.text}</h6>
+                        <span class="badge bg-light text-dark">+${mission.xpReward} XP</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 10px;">
+                        <div class="progress-bar bg-success" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small>${mission.progress}/${mission.target}</small>
+                        ${canClaim ? 
+                            `<button class="btn btn-sm btn-light" onclick="claimMission(${mission.id})">
+                                <i class="bi bi-gift-fill"></i> Claim
+                            </button>` : 
+                            mission.claimed ? '<small><i class="bi bi-check-circle-fill"></i> Claimed</small>' : ''
+                        }
+                    </div>
+                `;
+                missionList.appendChild(missionDiv);
+            });
+        }
+
+        // Memory Match Game
+        function startGame() {
+            const symbols = ['🎮', '🎯', '🎨', '🎭', '🎪', '🎸', '🎲', '🎰'];
+            gameState.cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+            gameState.flippedCards = [];
+            gameState.matchedPairs = 0;
+            gameState.moves = 0;
+            gameState.timer = 0;
+            
+            clearInterval(gameState.timerInterval);
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer++;
+                document.getElementById('timeCount').textContent = gameState.timer;
+            }, 1000);
+            
+            renderGame();
+            document.getElementById('moveCount').textContent = '0';
+            document.getElementById('timeCount').textContent = '0';
+        }
+
+        function renderGame() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+            
+            gameState.cards.forEach((symbol, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'game-tile';
+                tile.dataset.index = index;
+                tile.innerHTML = '?';
+                tile.onclick = () => flipCard(index);
+                board.appendChild(tile);
+            });
+        }
+
+        function flipCard(index) {
+            if (gameState.flippedCards.length >= 2) return;
+            if (gameState.flippedCards.includes(index)) return;
+            
+            const tiles = document.querySelectorAll('.game-tile');
+            const tile = tiles[index];
+            
+            if (tile.classList.contains('matched')) return;
+            
+            tile.classList.add('flipped');
+            tile.innerHTML = gameState.cards[index];
+            gameState.flippedCards.push(index);
+            
+            if (gameState.flippedCards.length === 2) {
+                gameState.moves++;
+                document.getElementById('moveCount').textContent = gameState.moves;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [index1, index2] = gameState.flippedCards;
+            const tiles = document.querySelectorAll('.game-tile');
+            
+            setTimeout(() => {
+                if (gameState.cards[index1] === gameState.cards[index2]) {
+                    tiles[index1].classList.add('matched');
+                    tiles[index2].classList.add('matched');
+                    gameState.matchedPairs++;
+                    
+                    if (gameState.matchedPairs === 8) {
+                        clearInterval(gameState.timerInterval);
+                        const bonus = Math.max(200 - gameState.moves * 5, 50);
+                        addXP(bonus);
+                        appState.dailyGameCompleted = true;
+                        checkMissionProgress();
+                        showNotification(`Game completed! +${bonus} XP`, 'success');
+                    }
+                } else {
+                    tiles[index1].classList.remove('flipped');
+                    tiles[index2].classList.remove('flipped');
+                    tiles[index1].innerHTML = '?';
+                    tiles[index2].innerHTML = '?';
+                }
+                gameState.flippedCards = [];
+            }, 500);
+        }
+
+        // XP and Level System
+        function addXP(amount) {
+            appState.xp += amount;
+            
+            while (appState.xp >= appState.xpToNextLevel) {
+                appState.xp -= appState.xpToNextLevel;
+                appState.level++;
+                appState.xpToNextLevel = Math.floor(appState.xpToNextLevel * 1.5);
+                showNotification(`Level Up! You are now level ${appState.level}!`, 'success');
+            }
+            
+            saveData();
+            updateUI();
+        }
+
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            appState.darkMode = !appState.darkMode;
+            document.body.classList.toggle('dark-mode', appState.darkMode);
+            const icon = document.querySelector('#darkModeToggle i');
+            icon.className = appState.darkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            saveData();
+        });
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            
+            if (tab === 'tasks') {
+                document.getElementById('tasksTab').classList.add('active');
+                document.querySelectorAll('.nav-link')[0].classList.add('active');
+            } else if (tab === 'missions') {
+                document.getElementById('missionsTab').classList.add('active');
+                document.querySelectorAll('.nav-link')[1].classList.add('active');
+            } else if (tab === 'game') {
+                document.getElementById('gameTab').classList.add('active');
+                document.querySelectorAll('.nav-link')[2].classList.add('active');
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('userLevel').textContent = appState.level;
+            document.getElementById('userXP').textContent = appState.xp;
+            document.getElementById('totalTasks').textContent = appState.tasks.length;
+            document.getElementById('completedTasks').textContent = appState.tasks.filter(t => t.completed).length;
+            
+            const xpPercent = (appState.xp / appState.xpToNextLevel) * 100;
+            const xpBar = document.getElementById('xpProgress');
+            xpBar.style.width = xpPercent + '%';
+            xpBar.textContent = Math.round(xpPercent) + '%';
+            
+            renderTasks();
+            renderMissions();
+            
+            if (appState.darkMode) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('#darkModeToggle i').className = 'bi bi-sun-fill';
+            }
+        }
+
+        // Notification System
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Data Persistence
+        function saveData() {
+            localStorage.setItem('alphabeat_data', JSON.stringify(appState));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('alphabeat_data');
+            if (saved) {
+                appState = JSON.parse(saved);
+            }
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(createServiceWorkerBlob())
+                .then(() => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed:', err));
+        }
+
+        function createServiceWorkerBlob() {
+            const swCode = `
+                const CACHE_NAME = 'alphabeat-v1';
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(
+                        caches.open(CACHE_NAME).then(cache => cache.addAll(['/']))
+                    );
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(
+                        caches.match(e.request).then(response => response || fetch(e.request))
+                    );
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            return URL.createObjectURL(blob);
+        }
+
+        // Initialize on load
+        window.onload = initApp;
+    </script>
+</body>
+</html>
